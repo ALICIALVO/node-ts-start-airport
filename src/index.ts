@@ -1,14 +1,29 @@
+import { FlightsTower } from './flight-tower.js';
 import log from '@ajar/marker';
-import {Alian} from './space.js';
 
-const { TODAY } = process.env;
+const flightsTower = new FlightsTower();
 
-let msg: string = "hello";
+(async () => {
+    const flightCreationInfo = await flightsTower.createNewFlights();
 
-function saySomething(something:string):void{
-    log.yellow('today\'s message is:',something); 
-    const ET = new Alian();
-    log.magenta('today is:',TODAY); 
-}
+    if (flightCreationInfo) {
+        const { numFlights, uniqueDestinations } = flightCreationInfo;
+        log.blue(`==============================`);
+        console.log(`${numFlights} flights were created`);
+        console.log(`destinations: ${uniqueDestinations.join(', ')}`);
+        log.blue(`==============================`);
 
-saySomething(msg);
+        flightsTower.departAllFlights();
+    }
+})();
+
+
+// import {FlightsTower} from "./flight-tower.js";
+
+// const tower = new FlightsTower();
+// await tower.createNewFlights();
+
+// tower.departAllFlights();
+
+// import { Flight } from './flight.js';
+
