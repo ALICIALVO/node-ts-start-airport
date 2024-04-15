@@ -1,5 +1,4 @@
-// // flight-tower is the manager of all flights and he send them whenever needed
-
+// // flight-tower file is the mnaager of all flights and he send them whenever needed
 import { fetchData } from './api.js';
 import { Flight } from './flight.js';
 import { FlightDTO, FlightData } from './flight-dto.js';
@@ -15,16 +14,19 @@ export class FlightsTower {
             if (Array.isArray(data?.flights)) {
                 const flights: FlightDTO[] = data.flights;
 
-                flights.forEach((flightData: FlightDTO) => {
-                    if (!this.#uniqueDestinations.has(flightData.destination)) {
-                        const flight = new Flight(flightData);
-                        this.#flights.push(flight);
-                        this.#uniqueDestinations.add(flightData.destination);
-                    }
-                });
+                this.#flights = flights
+                    .map((flightData: FlightDTO) => {
+                        if (!this.#uniqueDestinations.has(flightData.destination)) {
+                            const flight = new Flight(flightData);
+                            this.#uniqueDestinations.add(flightData.destination);
+                            return flight; // ret only the flight if destination is unique
+                        }
+                        return null; //ret null if the destination is not unique
+                    })
+                    .filter(flight => flight !== null) as Flight[]; // filter out null values
 
                 return {
-                    numFlights: this.#flights.length,
+                    numFlights: this.#flights.length, // ret the count of flights
                     uniqueDestinations: Array.from(this.#uniqueDestinations)
                 };
             }
@@ -32,7 +34,7 @@ export class FlightsTower {
             console.error('Error creating flights:', error);
         }
 
-        // ret undefined if was an error or no flights were created
+        // ret undefined if error or no flights were created:
         return undefined;
     }
 
@@ -49,4 +51,5 @@ export class FlightsTower {
         return Array.from(this.#uniqueDestinations);
     }
 }
+
 
